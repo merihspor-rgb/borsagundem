@@ -15,17 +15,17 @@
 <header class="top"><div class="brand"><div class="eyebrow">BIST / DAILY MARKET MONITOR</div><h1>Borsa Gündem</h1><p>XU030, XU100, XBANK, XUSIN ve yakın vadeli XU030 kontratı için sade günlük piyasa ekranı.</p></div><div class="status"><span id="dot" class="dot"></span><span id="status">VERİ BEKLENİYOR</span></div></header>
 <section class="actions"><div><h2 class="section-title">Ana göstergeler</h2><div class="sub">Günlük değişim · yüzde</div></div><button id="refresh" class="btn">↻ YENİLE</button></section>
 <section id="grid" class="grid"></section>
-<div class="note">Vadeli kontrat sembolü veri sağlayıcıda eşleşmezse kart açıkça “veri yok” olarak gösterilir. Veriler bilgilendirme amaçlıdır, yatırım tavsiyesi değildir.</div>
-<footer class="footer"><span>VERİ KAYNAĞI: Yahoo Finance Chart API</span><span id="updated">SON SORGU: —</span></footer>
+<div class="note">BIST endeksleri Yahoo Finance’tan, XU030 yakın vade kontratı TradingView’dan alınır. Veriler bilgilendirme amaçlıdır, yatırım tavsiyesi değildir.</div>
+<footer class="footer"><span>VERİ KAYNAĞI: Yahoo Finance + TradingView</span><span id="updated">SON SORGU: —</span></footer>
 </main>
 <script>
-const instruments=[['xu030','XU030','BIST 30 endeksi','XU030.IS'],['xu100','XU100','BIST 100 endeksi','XU100.IS'],['xbank','XBANK','BIST banka endeksi','XBANK.IS'],['xusin','XUSIN','BIST sınai endeksi','XUSIN.IS'],['future','XU030 F','XU030 yakın vade','XU030.F']];
+const instruments=[['xu030','XU030','BIST 30 endeksi','XU030.IS'],['xu100','XU100','BIST 100 endeksi','XU100.IS'],['xbank','XBANK','BIST banka endeksi','XBANK.IS'],['xusin','XUSIN','BIST sınai endeksi','XUSIN.IS'],['future','XU030 F','XU030 yakın vade','BIST:XU030D1!']];
 const grid=document.getElementById('grid');
 function card(x){return `<article class="card ${x[0]==='future'?'future':''}" id="c-${x[0]}"><div class="tag">${x[1]}</div><h3>${x[2]}</h3><div class="price">—</div><div class="change neutral">Veri bekleniyor</div><div class="meta">Kaynak sembolü: ${x[3]}</div></article>`}
 grid.innerHTML=instruments.map(card).join('');
 function fmt(n){return new Intl.NumberFormat('tr-TR',{minimumFractionDigits:2,maximumFractionDigits:2}).format(n)}
 function render(id,data){const el=document.getElementById('c-'+id);if(!el)return;const p=el.querySelector('.price'),ch=el.querySelector('.change');if(data?.price!=null){p.textContent=fmt(data.price);const cls=data.change>=0?'positive':'negative';ch.className='change '+cls;ch.textContent=(data.change>=0?'+':'')+fmt(data.change)+'  ('+(data.percent>=0?'+':'')+fmt(data.percent)+'%)'}else{p.textContent='VERİ YOK';ch.className='change error';ch.textContent='Bu sembol için veri alınamadı'}}
-async function load(){document.getElementById('status').textContent='VERİ YÜKLENİYOR';document.getElementById('dot').className='dot';try{const j=await fetch('data.json?ts='+Date.now(),{cache:'no-store'}).then(r=>r.json());for(const [id] of instruments)render(id,j[id]||null);document.getElementById('status').textContent='YAHOO FINANCE / GÜNCEL';document.getElementById('dot').className='dot live';document.getElementById('updated').textContent='SON SORGU: '+new Date(j.updatedAt||Date.now()).toLocaleString('tr-TR')}catch(e){document.getElementById('status').textContent='VERİ DOSYASI BEKLENİYOR';document.getElementById('dot').className='dot'}}
+async function load(){document.getElementById('status').textContent='VERİ YÜKLENİYOR';document.getElementById('dot').className='dot';try{const j=await fetch('data.json?ts='+Date.now(),{cache:'no-store'}).then(r=>r.json());for(const [id] of instruments)render(id,j[id]||null);document.getElementById('status').textContent='YAHOO / TRADINGVIEW / GÜNCEL';document.getElementById('dot').className='dot live';document.getElementById('updated').textContent='SON SORGU: '+new Date(j.updatedAt||Date.now()).toLocaleString('tr-TR')}catch(e){document.getElementById('status').textContent='VERİ DOSYASI BEKLENİYOR';document.getElementById('dot').className='dot'}}
 document.getElementById('refresh').addEventListener('click',load);load();setInterval(load,300000);
 </script>
 </body>
